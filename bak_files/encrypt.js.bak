@@ -1,0 +1,66 @@
+const { createCipheriv, randomBytes, pbkdf2Sync } = require("crypto"),
+    { createReadStream, createWriteStream, existsSync } = require("fs"),
+    { question } = require("readline-sync"),
+    { verifyPath } = require("../utils/verifyPath"),
+    { simpleCryptoModule } = require("../utils/simpleCryptoModule");
+
+
+// function createPassphrase() {
+//     const key = question("Please enter a new passphrase ==>  ", { hideEchoBack: true }),
+//         verify = question("Please re-enter your new passphrase ==>  ", { hideEchoBack: true });
+//     if (key !== verify) {
+//         console.error("Passphrases do not match!");
+//         return createPassphrase(); 
+//     };
+//     return key;
+// };
+
+// function cipherGen(masterkey) {
+//     const iv = randomBytes(16),
+//         salt = randomBytes(64),
+//         key = pbkdf2Sync(masterkey, salt, 2145, 32, 'sha512'),
+//         cipher = createCipheriv('aes-256-gcm', key, iv);
+
+//     return { iv, salt, cipher };
+// };
+
+// function encrypt(data, masterkey) {
+//     const { iv, salt, cipher} = cipherGen(masterkey),
+//         encrypted = Buffer.concat([cipher.update(data, 'utf8'), cipher.final()]),
+//         tag = cipher.getAuthTag();
+
+//     return Buffer.concat([salt, iv, tag, encrypted]).toString('base64');
+// };
+
+module.exports = {
+    command: "encrypt [input|i] [output]",
+    aliases: ["enc", "e"],
+    describe: "Simple AES-256-GCM data encryption",
+    builder: {
+        "input": {
+            describe: "Data input to be encrypted. May be a file path, string, or recieved from stdin",
+            alias: "i",
+            type: "string",
+            default: null
+        },
+        "output": {
+            describe: "Output destination for encrypted data, may be file path or output to stdout",
+            alias: "o",
+            type: "string",
+            default: null
+        }
+    },
+    handler: yargs => { simpleCryptoModule(yargs, "encrypt") }
+        // yargs => {
+        // const input = (!yargs.input) ? process.stdin : createReadStream(verifyPath(yargs.input, "input")),
+        //     output = (!yargs.output) ? process.stdout : createWriteStream(verifyPath(yargs.output, "output"));
+
+        // const data = [];
+        // input.on('readable', () => {
+        //     const chunk = input.read();
+        //     if (chunk !== null) data.push(chunk);
+        // }).on("end", () => {
+        //     output.write(encrypt(data.join(), createPassphrase()));
+        // });
+    // }
+};

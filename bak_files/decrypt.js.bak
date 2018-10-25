@@ -1,0 +1,63 @@
+const { createDecipheriv, randomBytes, pbkdf2Sync } = require("crypto"),
+    { createReadStream, createWriteStream } = require("fs"),
+    { question } = require("readline-sync"),
+    { verifyPath } = require("../utils/verifyPath"),
+    { simpleCryptoModule } = require("../utils/simpleCryptoModule");
+
+// function decipherGen(encData, masterkey) {
+//     const encBuf = Buffer.from(encData, 'base64');
+
+//     const salt = encBuf.slice(0, 64),
+//         iv = encBuf.slice(64, 80),
+//         tag = encBuf.slice(80, 96),
+//         data = encBuf.slice(96),
+//         key = pbkdf2Sync(masterkey, salt , 2145, 32, 'sha512'),
+//         decipher = createDecipheriv('aes-256-gcm', key, iv);
+//         decipher.setAuthTag(tag);
+
+//     return { data, decipher };
+// };
+
+// function decrypt (encData, masterkey){
+//     const {data, decipher} = decipherGen(encData, masterkey);
+
+//     const decrypted = decipher.update(data, 'binary', 'utf8') + decipher.final('utf8');
+//     return decrypted;
+// };
+    
+// function promptPassphrase () {
+//     return question("Please your passphrase for this data ==>  ", { hideEchoBack: true });
+// };
+
+module.exports = {
+    command: "decrypt [input] [output]",
+    aliases: ["dec", "d"],
+    describe: "Simple AES-256-GCM data decryption",
+    builder: {
+        "input": {
+            describe: "Data input to be decrypted. May be a file path, string, or recieved from stdin",
+            alias: "i",
+            type: "string",
+            default: null
+        },
+        "output": {
+            describe: "Output destination for decrypted data, may be file path or output to stdout",
+            alias: "i",
+            type: "string",
+            default: null
+        }
+    },
+    handler: yargs => { simpleCryptoModule(yargs, "decrypt") }
+        // yargs => {
+        // const input = (!yargs.input) ? process.stdin : createReadStream(verifyPath(yargs.input, "input")),
+        //     output = (!yargs.output) ? process.stdout : createWriteStream(verifyPath(yargs.output, "output"));
+
+        // const data = [];
+        // input.on('readable', () => {
+        //     const chunk = input.read();
+        //     if (chunk !== null) data.push(chunk);
+        // }).on("end", () => {
+        //     output.write(decrypt(data.join(), promptPassphrase()));
+        // });
+    // }
+};
